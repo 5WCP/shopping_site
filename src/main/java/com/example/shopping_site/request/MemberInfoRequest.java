@@ -11,7 +11,7 @@ public class MemberInfoRequest {
 	@JsonProperty("pwd_check")
 	private String pwdCheck;
 	
-	@JsonProperty("new_ped")
+	@JsonProperty("new_pwd")
 	private String newPwd;
 	
 	@JsonProperty("new_pwd_check")

@@ -13,6 +13,12 @@ public class ProductInfoRequest {
 	
 	@JsonProperty("sorts_name")
 	private List<String> sortsName = new ArrayList<>(); 
+	
+	@JsonProperty("userid")
+	private String userId;
+	
+	@JsonProperty("product_id")
+	private String productId;
 
 	public ProductInfo getProductInfo() {
 		return productInfo;
@@ -29,5 +35,21 @@ public class ProductInfoRequest {
 	public void setSortsName(List<String> sortsName) {
 		this.sortsName = sortsName;
 	}
-	
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getProductId() {
+		return productId;
+	}
+
+	public void setProductId(String productId) {
+		this.productId = productId;
+	}
+
 }

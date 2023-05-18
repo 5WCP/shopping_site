@@ -24,7 +24,7 @@ public class productInfoSort {
 	private ProductInfo productInfo;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "sort_name")
+	@JoinColumn(name = "sort_id")
 	private ProductSort productSort;
 
 	public Long getId() {

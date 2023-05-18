@@ -12,4 +12,8 @@ public interface ProductInfoService {
 	public ProductInfoResponse reviseProduct(ProductInfoRequest request);
 	
 	public ProductInfoResponse changeState(ProductInfoRequest request);
+	
+	public ProductInfoResponse findMemSell(ProductInfoRequest request);
+	
+	public ProductInfoResponse getProInfo(ProductInfoRequest request);
 }

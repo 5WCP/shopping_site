@@ -80,9 +80,12 @@ public class MemberInfoServiceImpl implements MemberInfoService {
 	@Override
 	public MemberInfoResponse changePwd(MemberInfoRequest request) {
 		MemberInfo reqMem = request.getMemberInfo();
-		String pwdFormat = "^(?=.*\\d{3,})(?=.*[A-Z]+)(?=.*[a-z]+).{8,15}$";
+		String pwdFormat = "^(?=.*\\d{3,})(?=.*[A-Z]+)(?=.*[a-z]+)[a-zA-Z0-9]{8,15}$";
+		if(!StringUtils.hasText(reqMem.getUserId())) {
+			return new MemberInfoResponse("尚未登入(異常)");
+		}
 		if(!memberInfoDao.existsById(reqMem.getUserId())) {
-			return new MemberInfoResponse("用戶名不存在");
+			return new MemberInfoResponse("該用戶品非本站用戶(異常)");
 		}
 		if(!StringUtils.hasText(reqMem.getPassword())
 			|| !StringUtils.hasText(request.getNewPwd())
@@ -91,7 +94,7 @@ public class MemberInfoServiceImpl implements MemberInfoService {
 		}
 		if(!request.getNewPwd().matches(pwdFormat)) {
 			return new MemberInfoResponse("新密碼格式錯誤 密碼需符合大小寫英文字母至少各一個，數字至少"
-					+ "三個，長度最少八個、最多十五個");
+					+ "三個，長度最少八個、最多十五個的英文字母和數字");
 		}
 		MemberInfo mem = memberInfoDao.findById(reqMem.getUserId()).get();
 		if(!reqMem.getPassword().equals(mem.getPassword())) {
@@ -113,25 +116,66 @@ public class MemberInfoServiceImpl implements MemberInfoService {
 	}
 
 	@Override
-	public MemberInfoResponse reviseMemInfo(MemberInfoRequest request) {
+	public MemberInfoResponse editMemInfo(MemberInfoRequest request) {
 		MemberInfo reqMem = request.getMemberInfo();
+		if(!StringUtils.hasText(reqMem.getUserId())) {
+			return new MemberInfoResponse("尚未登入(異常)");
+		}
 		if(!memberInfoDao.existsById(reqMem.getUserId())) {
-			return new MemberInfoResponse("用戶名不存在");
+			return new MemberInfoResponse("該用戶品非本站用戶(異常)");
 		}
 		if(!StringUtils.hasText(reqMem.getMail())
 			||!StringUtils.hasText(reqMem.getName())
 			||!Optional.ofNullable(reqMem.getBirthDate()).isPresent()) {
 			return new MemberInfoResponse("需填寫欄位請確實填寫");
 		}
+		MemberInfo mem = memberInfoDao.findById(reqMem.getUserId()).get();
+		if(reqMem.getMail().equals(mem.getMail())
+			&& reqMem.getName().equals(mem.getName())
+			&& reqMem.getBirthDate().equals(mem.getBirthDate())) {
+			return new MemberInfoResponse(0);
+		}
+		if(!reqMem.getBirthDate().equals(mem.getBirthDate())) {
+			mem.setBirthDate(reqMem.getBirthDate());
+		}
+		if(!reqMem.getName().equals(mem.getName())) {
+			mem.setName(reqMem.getName());
+		}
 		List<MemberInfo> checkMail = memberInfoDao.findByMail(reqMem.getMail());
-		if(!checkMail.isEmpty()) {
+		if(!checkMail.isEmpty() && !reqMem.getMail().equals(mem.getMail())) {
 			return new MemberInfoResponse("預修改的信箱已有人使用");
 		}
-		MemberInfo mem = memberInfoDao.findById(reqMem.getUserId()).get();
-		mem.setBirthDate(reqMem.getBirthDate());
-		mem.setMail(reqMem.getMail());
-		mem.setName(reqMem.getName());
+		if(!reqMem.getMail().equals(mem.getMail())) {
+			mem.setMail(reqMem.getMail());
+		}
 		memberInfoDao.save(mem);
 		return new MemberInfoResponse("資料修改成功");
+	}
+
+	@Override
+	public MemberInfoResponse findMemInfo(MemberInfoRequest request) {
+		MemberInfo reqMem = request.getMemberInfo();
+		if(!StringUtils.hasText(reqMem.getUserId())) {
+			return new MemberInfoResponse("帳號未登入(異常)");
+		}
+		if(!memberInfoDao.existsById(reqMem.getUserId())) {
+			return new MemberInfoResponse("登入帳號非本站會員(異常)");
+		}
+		MemberInfo userInfo = memberInfoDao.findById(reqMem.getUserId()).get();
+		return new MemberInfoResponse(userInfo);
+	}
+
+	@Override
+	public MemberInfoResponse deleMemInfo(MemberInfoRequest request) {
+		MemberInfo reqMem = request.getMemberInfo();
+		if(!StringUtils.hasText(reqMem.getUserId())) {
+			return new MemberInfoResponse("尚未登入(異常)");
+		}
+		if(!memberInfoDao.existsById(reqMem.getUserId())) {
+			return new MemberInfoResponse("該用戶品非本站用戶(異常)");
+		}
+		MemberInfo deleMem = memberInfoDao.findById(reqMem.getUserId()).get();
+		memberInfoDao.delete(deleMem);
+		return new MemberInfoResponse("會員刪除成功");
 	}
 }

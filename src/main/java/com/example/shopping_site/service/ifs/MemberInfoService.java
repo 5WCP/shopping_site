@@ -11,5 +11,9 @@ public interface MemberInfoService {
 	
 	public MemberInfoResponse changePwd(MemberInfoRequest request);
 	
-	public MemberInfoResponse reviseMemInfo(MemberInfoRequest request);
+	public MemberInfoResponse editMemInfo(MemberInfoRequest request);
+	
+	public MemberInfoResponse findMemInfo(MemberInfoRequest request);
+	
+	public MemberInfoResponse deleMemInfo(MemberInfoRequest request);
 }

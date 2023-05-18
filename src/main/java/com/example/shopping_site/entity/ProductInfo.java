@@ -7,8 +7,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -20,9 +18,8 @@ import javax.persistence.Table;
 public class ProductInfo {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "product_id")
-	private Long productId;
+	private String productId;
 	
 	@Column(name = "product_name")
 	private String productName;
@@ -34,7 +31,7 @@ public class ProductInfo {
 	private int stock;
 	
 	@Column(name = "product_picture")
-	private byte[] productPicture;
+	private String productPicture;
 	
 	@Column(name = "state")
 	private boolean state;
@@ -42,7 +39,7 @@ public class ProductInfo {
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "product_info_sort", joinColumns = {
 	@JoinColumn(name = "product_id")}, inverseJoinColumns = {
-	@JoinColumn(name = "sort_name")})
+	@JoinColumn(name = "sort_id")})
 	private List<ProductSort> sorts = new ArrayList<>();
 	
 	@Column(name = "userid")
@@ -72,11 +69,11 @@ public class ProductInfo {
 		this.stock = stock;
 	}
 
-	public byte[] getProductPicture() {
+	public String getProductPicture() {
 		return productPicture;
 	}
 
-	public void setProductPicture(byte[] productPicture) {
+	public void setProductPicture(String productPicture) {
 		this.productPicture = productPicture;
 	}
 
@@ -96,11 +93,11 @@ public class ProductInfo {
 		this.sorts = sorts;
 	}
 
-	public Long getProductId() {
+	public String getProductId() {
 		return productId;
 	}
 
-	public void setProductId(Long productId) {
+	public void setProductId(String productId) {
 		this.productId = productId;
 	}
 

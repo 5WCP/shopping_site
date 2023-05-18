@@ -12,7 +12,6 @@ import com.example.shopping_site.service.ifs.MemberInfoService;
 
 @CrossOrigin
 @RestController
-
 public class MemberInfoController {
 	
 	@Autowired
@@ -33,8 +32,18 @@ public class MemberInfoController {
 		return memberInfoService.changePwd(request);
 	}
 	
-	@PostMapping("revise_mem_info")
+	@PostMapping("edit_mem_info")
 	public MemberInfoResponse reviseMemInfo(@RequestBody MemberInfoRequest request) {
-		return memberInfoService.reviseMemInfo(request);
+		return memberInfoService.editMemInfo(request);
+	}
+	
+	@PostMapping("find_mem_info")
+	public MemberInfoResponse findMemInfo(@RequestBody MemberInfoRequest request) {
+		return memberInfoService.findMemInfo(request);
+	}
+	
+	@PostMapping("dele_mem_info")
+	public MemberInfoResponse deleMemInfo(@RequestBody MemberInfoRequest request) {
+		return memberInfoService.deleMemInfo(request);
 	}
 }
