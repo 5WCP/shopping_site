@@ -14,6 +14,7 @@ import com.example.shopping_site.repository.MemberInfoDao;
 import com.example.shopping_site.repository.ProductInfoDao;
 import com.example.shopping_site.request.ProductInfoRequest;
 import com.example.shopping_site.response.ProductInfoResponse;
+import com.example.shopping_site.response.RespProInfo;
 import com.example.shopping_site.service.ifs.ProductInfoService;
 
 @Service
@@ -45,7 +46,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 			proIdBuilderA.append(String.format("%08d", randomNumA));
 			newProId = proIdBuilderA.toString();
 		}
-		reqPro.setProductId(proIdBuilder.toString());
+		reqPro.setProductId(newProId);
 		if(!StringUtils.hasText(reqPro.getUserId())) {
 			return new ProductInfoResponse("沒有使用者用戶名資料(異常)");
 		}
@@ -183,5 +184,87 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		}
 		return new ProductInfoResponse(getPro.getProductName(), getPro.getPrice(), getPro.getStock(), 
 				getPro.getProductPicture(), sortList, getPro.isState());
+	}
+
+	@Override
+	public ProductInfoResponse searProSort(ProductInfoRequest request) {
+		List<ProductInfo> allProList = new ArrayList<>(); // 所有商品
+		List<ProductInfo> sortProList = new ArrayList<>(); // 分類商品
+		List<RespProInfo> repsProList = new ArrayList<>(); // 回傳的商品資訊
+		allProList = productInfoDao.findAll();
+		sortProList = productInfoDao.findBySortsSortName(request.getSortName());
+		if(request.getSortName().equals("全部搜尋")) {
+			if(allProList.isEmpty()) {
+				return new ProductInfoResponse("網站暫無商品");
+			}
+			for(ProductInfo pro : allProList) {
+				if(pro.isState() == true && !pro.getUserId().equals(request.getUserId())) {
+					repsProList.add(new RespProInfo(pro.getProductId(), pro.getProductName(), pro.getPrice(), 
+							pro.getStock(), pro.getProductPicture()));
+				}
+			}
+			return new ProductInfoResponse("查詢成功", repsProList);
+		}
+		if(sortProList.isEmpty()) {
+			return new ProductInfoResponse("該分類暫無商品");
+		}
+		for(ProductInfo sortPro : sortProList) {
+			if(sortPro.isState() == true && !sortPro.getUserId().equals(request.getUserId())) {
+				repsProList.add(new RespProInfo(sortPro.getProductId(), sortPro.getProductName(), sortPro.getPrice(), 
+						sortPro.getStock(), sortPro.getProductPicture()));
+			}
+		}
+		return new ProductInfoResponse("查詢成功", repsProList);
+	}
+
+	@Override
+	public ProductInfoResponse searAllPro(ProductInfoRequest request) {
+		List<ProductInfo> allProList = new ArrayList<>(); // 所有商品
+		List<RespProInfo> repsProList = new ArrayList<>(); // 回傳的商品資訊
+		allProList = productInfoDao.findAll();
+		if(allProList.isEmpty()) {
+			return new ProductInfoResponse("網站暫無商品");
+		}
+		for(ProductInfo pro : allProList) {
+			if(pro.isState() == true && !pro.getUserId().equals(request.getUserId())) {
+				repsProList.add(new RespProInfo(pro.getProductId(), pro.getProductName(), pro.getPrice(), 
+						pro.getStock(), pro.getProductPicture()));
+			}
+		}
+		return new ProductInfoResponse("查詢成功", repsProList);
+	}
+
+	@Override
+	public ProductInfoResponse searProNameAndSort(ProductInfoRequest request) {
+		List<ProductInfo> allProNameList = new ArrayList<>(); // 所有搜尋名稱商品
+		List<ProductInfo> sortProNameList = new ArrayList<>(); // 分類搜尋名稱商品
+		List<RespProInfo> repsProList = new ArrayList<>(); // 回傳的商品資訊
+		allProNameList = productInfoDao.findByPorductNameContaining
+				(request.getProductInfo().getProductName());
+		sortProNameList = productInfoDao.findByPorductNameContainingAndBySortsSortName
+				(request.getProductInfo().getProductName(), request.getSortName());
+		if(request.getSortName().equals("全部搜尋")) {
+			if(allProNameList.isEmpty()) {
+				return new ProductInfoResponse("網站暫無此名稱的商品");
+			}
+			for(ProductInfo pro : allProNameList) {
+				if(pro.isState() == true && !pro.getUserId().equals(request.getUserId())) {
+					repsProList.add(new RespProInfo(pro.getProductId(), pro.getProductName(), pro.getPrice(), 
+							pro.getStock(), pro.getProductPicture()));
+				}
+			}
+			return new ProductInfoResponse("查詢成功", repsProList);
+		}
+		
+		if(sortProNameList.isEmpty()) {
+			return new ProductInfoResponse("該分類暫無此名稱的商品");
+		}
+		for(ProductInfo sortPro : sortProNameList) {
+			if(sortPro.isState() == true && !sortPro.getUserId().equals(request.getUserId())) {
+				repsProList.add(new RespProInfo(sortPro.getProductId(), sortPro.getProductName(), sortPro.getPrice(), 
+						sortPro.getStock(), sortPro.getProductPicture()));
+			}
+		}
+		return new ProductInfoResponse("查詢成功", repsProList);
 	}
 }

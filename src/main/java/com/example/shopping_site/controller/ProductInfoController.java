@@ -46,4 +46,19 @@ public class ProductInfoController {
 	public ProductInfoResponse getProInfo(@RequestBody ProductInfoRequest request) {
 		return productInfoService.getProInfo(request);
 	}
+	
+	@PostMapping("sear_pro_sort")
+	public ProductInfoResponse searProSort(@RequestBody ProductInfoRequest request) {
+		return productInfoService.searProSort(request);
+	}
+	
+	@PostMapping("sear_all_pro")
+	public ProductInfoResponse searAllPro(@RequestBody ProductInfoRequest request) {
+		return productInfoService.searAllPro(request);
+	}
+	
+	@PostMapping("sear_pro_name_and_sort")
+	public ProductInfoResponse searProNameAndSort(@RequestBody ProductInfoRequest request) {
+		return productInfoService.searProNameAndSort(request);
+	}
 }

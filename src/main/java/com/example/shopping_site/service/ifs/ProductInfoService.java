@@ -16,4 +16,10 @@ public interface ProductInfoService {
 	public ProductInfoResponse findMemSell(ProductInfoRequest request);
 	
 	public ProductInfoResponse getProInfo(ProductInfoRequest request);
+	
+	public ProductInfoResponse searProSort(ProductInfoRequest request);
+	
+	public ProductInfoResponse searAllPro(ProductInfoRequest request);
+	
+	public ProductInfoResponse searProNameAndSort(ProductInfoRequest request);
 }

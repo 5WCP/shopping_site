@@ -19,6 +19,9 @@ public class ProductInfoRequest {
 	
 	@JsonProperty("product_id")
 	private String productId;
+	
+	@JsonProperty("sort_name")
+	private String sortName;
 
 	public ProductInfo getProductInfo() {
 		return productInfo;
@@ -50,6 +53,14 @@ public class ProductInfoRequest {
 
 	public void setProductId(String productId) {
 		this.productId = productId;
+	}
+
+	public String getSortName() {
+		return sortName;
+	}
+
+	public void setSortName(String sortName) {
+		this.sortName = sortName;
 	}
 
 }

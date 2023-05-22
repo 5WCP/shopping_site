@@ -32,6 +32,9 @@ public class ProductInfoResponse {
 	
 	@JsonProperty("state")
 	private boolean state;
+	
+	@JsonProperty("re_pro_list")
+	private List<RespProInfo> respProInfoList;
 
 	public String getMessage() {
 		return message;
@@ -124,6 +127,11 @@ public class ProductInfoResponse {
 		this.productPicture = productPicture;
 		this.sortName = sortName;
 		this.state = state;
+	}
+
+	public ProductInfoResponse(String message, List<RespProInfo> respProInfoList) {
+		this.message = message;
+		this.respProInfoList = respProInfoList;
 	}
 
 }

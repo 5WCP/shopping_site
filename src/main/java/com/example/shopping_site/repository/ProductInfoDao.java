@@ -11,4 +11,10 @@ import com.example.shopping_site.entity.ProductInfo;
 public interface ProductInfoDao extends JpaRepository<ProductInfo, String> {
 	
 	List<ProductInfo> findByUserId(String userId);
+	
+	List<ProductInfo> findBySortsSortName(String sortName);
+	
+	List<ProductInfo> findByPorductNameContaining(String productName);
+	
+	List<ProductInfo> findByPorductNameContainingAndBySortsSortName(String sortName, String productName);
 }

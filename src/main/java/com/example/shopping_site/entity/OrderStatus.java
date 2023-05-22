@@ -1,5 +1,7 @@
 package com.example.shopping_site.entity;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -9,7 +11,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "order_status")
 @IdClass(value = UserBuyProduct.class)
-
 public class OrderStatus {
 	
 	@Id
@@ -18,10 +19,14 @@ public class OrderStatus {
 	
 	@Id
 	@Column(name = "product_id")
-	private Long productId;
+	private String productId;
+	
+	@Id
+	@Column(name = "update_time")
+	private LocalDateTime updateTime;
 	
 	@Column(name = "amount")
-	private int amount;
+	private Integer amount;
 	
 	@Column(name = "state")
 	private String state;
@@ -34,19 +39,27 @@ public class OrderStatus {
 		this.userId = userId;
 	}
 
-	public Long getProductId() {
+	public String getProductId() {
 		return productId;
 	}
 
-	public void setProductId(Long productId) {
+	public void setProductId(String productId) {
 		this.productId = productId;
 	}
 
-	public int getAmount() {
+	public LocalDateTime getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(LocalDateTime updateTime) {
+		this.updateTime = updateTime;
+	}
+
+	public Integer getAmount() {
 		return amount;
 	}
 
-	public void setAmount(int amount) {
+	public void setAmount(Integer amount) {
 		this.amount = amount;
 	}
 
@@ -61,5 +74,15 @@ public class OrderStatus {
 	public OrderStatus() {
 		
 	}
+
+	public OrderStatus(String userId, String productId, LocalDateTime updateTime, 
+			Integer amount, String state) {
+		this.userId = userId;
+		this.productId = productId;
+		this.updateTime = updateTime;
+		this.amount = amount;
+		this.state = state;
+	}
+
 		
 }
