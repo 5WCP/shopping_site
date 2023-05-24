@@ -11,5 +11,9 @@ import com.example.shopping_site.entity.UserBuyProduct;
 @Repository
 public interface OrderStatusDao extends JpaRepository<OrderStatus, UserBuyProduct> {
 	
-	List<OrderStatus> findByUserId(String userid);
+	List<OrderStatus> findByUserIdAndProductIdAndState(String userid, String productId, String state);
+	
+	List<OrderStatus> findByUserIdAndState(String userid, String state);
+	
+	List<OrderStatus> findByProductId(String productId);
 }

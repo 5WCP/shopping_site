@@ -14,7 +14,7 @@ public interface ProductInfoDao extends JpaRepository<ProductInfo, String> {
 	
 	List<ProductInfo> findBySortsSortName(String sortName);
 	
-	List<ProductInfo> findByPorductNameContaining(String productName);
+	List<ProductInfo> findByProductNameContaining(String productName);
 	
-	List<ProductInfo> findByPorductNameContainingAndBySortsSortName(String sortName, String productName);
+	List<ProductInfo> findByProductNameContainingAndSortsSortName(String sortName, String productName);
 }

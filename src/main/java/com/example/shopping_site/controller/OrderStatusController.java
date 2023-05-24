@@ -37,4 +37,28 @@ public class OrderStatusController {
 		return orderStatusService.checkout(request);
 	}
 	
+	@PostMapping("sear_buy_pro")
+	public OrderStatusResponse searBuyPro(@RequestBody OrderStatusRequest request) {
+		return orderStatusService.searBuyPro(request);
+	}
+	
+	@PostMapping("buy_cancel_ord")
+	public OrderStatusResponse buyCancelOrd(@RequestBody OrderStatusRequest request) {
+		return orderStatusService.buyCancelOrd(request);
+	}
+	
+	@PostMapping("sear_sell_pro")
+	public OrderStatusResponse searSellPro(@RequestBody OrderStatusRequest request) {
+		return orderStatusService.searSellPro(request);
+	}
+	
+	@PostMapping("sell_cancel_ord")
+	public OrderStatusResponse sellCancelOrd(@RequestBody OrderStatusRequest request) {
+		return orderStatusService.sellCancelOrd(request);
+	}
+	
+	@PostMapping("change_ord_state")
+	public OrderStatusResponse changeOrdState(@RequestBody OrderStatusRequest request) {
+		return orderStatusService.changeOrdState(request);
+	}
 }

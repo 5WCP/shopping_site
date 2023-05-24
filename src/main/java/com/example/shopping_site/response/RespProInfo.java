@@ -1,6 +1,10 @@
 package com.example.shopping_site.response;
 
+import java.time.LocalDateTime;
+
 public class RespProInfo {
+	
+	private String userId;
 	
 	private String productId;
 	
@@ -13,6 +17,18 @@ public class RespProInfo {
 	private String productPicture;
 	
 	private Integer amount;
+	
+	private String state;
+	
+	private LocalDateTime updateTime;
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
 	public String getProductId() {
 		return productId;
@@ -62,11 +78,28 @@ public class RespProInfo {
 		this.amount = amount;
 	}
 
+	public LocalDateTime getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(LocalDateTime updateTime) {
+		this.updateTime = updateTime;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
 	public RespProInfo() {
 		
 	}
 
-	public RespProInfo(String productId, String productName, Integer price, Integer stock, String productPicture) {
+	public RespProInfo(String productId, String productName, Integer price, Integer stock, 
+			String productPicture) {
 		this.productId = productId;
 		this.productName = productName;
 		this.price = price;
@@ -74,12 +107,36 @@ public class RespProInfo {
 		this.productPicture = productPicture;
 	}
 
-	public RespProInfo(String productId, String productName, Integer price, String productPicture, Integer amount) {
+	public RespProInfo(String productId, String productName, Integer price, String productPicture, 
+			Integer amount, LocalDateTime updateTime) {
 		this.productId = productId;
 		this.productName = productName;
 		this.price = price;
 		this.productPicture = productPicture;
 		this.amount = amount;
+		this.updateTime = updateTime;
 	}
-		
+
+	public RespProInfo(String productId, String productName, Integer price, Integer amount, String state,
+			LocalDateTime updateTime) {
+		this.productId = productId;
+		this.productName = productName;
+		this.price = price;
+		this.amount = amount;
+		this.state = state;
+		this.updateTime = updateTime;
+	}
+
+	public RespProInfo(String userId, String productId, String productName, Integer price, Integer amount, String state,
+			LocalDateTime updateTime) {
+		this.userId = userId;
+		this.productId = productId;
+		this.productName = productName;
+		this.price = price;
+		this.amount = amount;
+		this.state = state;
+		this.updateTime = updateTime;
+	}
+	
+	
 }

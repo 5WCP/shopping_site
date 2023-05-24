@@ -12,4 +12,14 @@ public interface OrderStatusService {
 	public OrderStatusResponse removeProFromCart(OrderStatusRequest request);
 	
 	public OrderStatusResponse checkout(OrderStatusRequest request);
+	
+	public OrderStatusResponse searBuyPro(OrderStatusRequest request);
+	
+	public OrderStatusResponse buyCancelOrd(OrderStatusRequest request);
+	
+	public OrderStatusResponse searSellPro(OrderStatusRequest request);
+	
+	public OrderStatusResponse sellCancelOrd(OrderStatusRequest request);
+	
+	public OrderStatusResponse changeOrdState(OrderStatusRequest request);
 }

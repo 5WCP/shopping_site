@@ -19,12 +19,12 @@ public class OrderStatusResponse {
 		this.message = message;
 	}
 
-	public List<RespProInfo> getCartProList() {
+	public List<RespProInfo> getCartInfoList() {
 		return cartInfoList;
 	}
 
-	public void setCartProList(List<RespProInfo> cartProList) {
-		this.cartInfoList = cartProList;
+	public void setCartInfoList(List<RespProInfo> cartInfoList) {
+		this.cartInfoList = cartInfoList;
 	}
 
 	public OrderStatusResponse() {

@@ -236,12 +236,15 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 
 	@Override
 	public ProductInfoResponse searProNameAndSort(ProductInfoRequest request) {
+		if(!StringUtils.hasText(request.getProductInfo().getProductName())) {
+			return new ProductInfoResponse("搜尋列至少要打一個字");
+		}
 		List<ProductInfo> allProNameList = new ArrayList<>(); // 所有搜尋名稱商品
 		List<ProductInfo> sortProNameList = new ArrayList<>(); // 分類搜尋名稱商品
 		List<RespProInfo> repsProList = new ArrayList<>(); // 回傳的商品資訊
-		allProNameList = productInfoDao.findByPorductNameContaining
+		allProNameList = productInfoDao.findByProductNameContaining
 				(request.getProductInfo().getProductName());
-		sortProNameList = productInfoDao.findByPorductNameContainingAndBySortsSortName
+		sortProNameList = productInfoDao.findByProductNameContainingAndSortsSortName
 				(request.getProductInfo().getProductName(), request.getSortName());
 		if(request.getSortName().equals("全部搜尋")) {
 			if(allProNameList.isEmpty()) {
