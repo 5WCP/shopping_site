@@ -31,6 +31,12 @@ public class MemberInfo {
 	@Column(name = "signup_time")
 	private LocalDateTime signUpTime;
 	
+	@Column(name = "phone")
+	private String phone;
+	
+	@Column(name = "active")
+	private boolean active;
+	
 	public String getUserId() {
 		return userId;
 	}
@@ -77,6 +83,22 @@ public class MemberInfo {
 
 	public void setSignUpTime(LocalDateTime signUpTime) {
 		this.signUpTime = signUpTime;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	public MemberInfo() {

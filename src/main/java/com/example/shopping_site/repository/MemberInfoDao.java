@@ -13,4 +13,6 @@ public interface MemberInfoDao extends JpaRepository<MemberInfo, String> {
 	List<MemberInfo> findByMail(String mail);
 	
 	List<MemberInfo> findByPassword(String password);
+	
+	List<MemberInfo> findByPhone(String phone);
 }

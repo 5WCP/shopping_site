@@ -1,5 +1,6 @@
 package com.example.shopping_site.entity;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +45,12 @@ public class ProductInfo {
 	
 	@Column(name = "userid")
 	private String userId;
+	
+	@Column(name = "add_time")
+	private LocalDateTime addTime;
+	
+	@Column(name = "delete")
+	private boolean delete;
 
 	public String getProductName() {
 		return productName;
@@ -107,6 +114,22 @@ public class ProductInfo {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	public LocalDateTime getAddTime() {
+		return addTime;
+	}
+
+	public void setAddTime(LocalDateTime addTime) {
+		this.addTime = addTime;
+	}
+
+	public boolean isDelete() {
+		return delete;
+	}
+
+	public void setDelete(boolean delete) {
+		this.delete = delete;
 	}
 
 	public ProductInfo() {

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.example.shopping_site.entity.MemberInfo;
 import com.example.shopping_site.entity.OrderStatus;
 import com.example.shopping_site.entity.ProductInfo;
 import com.example.shopping_site.entity.UserBuyProduct;
@@ -88,6 +89,9 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 		userCartList = orderStatusDao.findByUserIdAndState(reqUser, "考慮中");
 		for(OrderStatus userCart : userCartList) {
 			ProductInfo cartPro = productInfoDao.findById(userCart.getProductId()).get();
+			if(userCart.getAmount() > cartPro.getStock()) {
+				userCart.setAmount(cartPro.getStock());
+			}
 			cartInfoList.add(new RespProInfo(cartPro.getProductId(), cartPro.getProductName(), 
 				cartPro.getPrice(), cartPro.getProductPicture(), userCart.getAmount(), 
 				userCart.getUpdateTime()));
@@ -151,8 +155,10 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 		}
 		for(OrderStatus resOrSt : resOrStList) {
 			ProductInfo pro = productInfoDao.findById(resOrSt.getProductId()).get();
+			MemberInfo sellMem = memberInfoDao.findById(pro.getUserId()).get();
 			orderInfoList.add(new RespProInfo(resOrSt.getProductId(), pro.getProductName(), 
-					pro.getPrice(), resOrSt.getAmount(), resOrSt.getState(), resOrSt.getUpdateTime()));
+					pro.getPrice(), resOrSt.getAmount(), resOrSt.getState(), 
+					resOrSt.getUpdateTime(), sellMem.getPhone()));
 		}
 		return new OrderStatusResponse(orderInfoList);
 	}
@@ -202,9 +208,10 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 		for(OrderStatus orderSellPro : orderSellProList) {
 			if(orderSellPro.getState().equals(request.getState())) { // 如果符合要尋找的訂單狀態
 				ProductInfo pro = productInfoDao.findById(orderSellPro.getProductId()).get();
+				MemberInfo buyMem = memberInfoDao.findById(orderSellPro.getUserId()).get();
 				sellStaProList.add(new RespProInfo(orderSellPro.getUserId(), orderSellPro.getProductId(), 
 						pro.getProductName(), pro.getPrice(), orderSellPro.getAmount(), 
-						orderSellPro.getState(), orderSellPro.getUpdateTime()));
+						orderSellPro.getState(), orderSellPro.getUpdateTime(), buyMem.getPhone()));
 			}
 		}
 		return new OrderStatusResponse(sellStaProList);

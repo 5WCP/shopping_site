@@ -30,6 +30,9 @@ public class OrderStatus {
 	
 	@Column(name = "state")
 	private String state;
+	
+	@Column(name = "order_number")
+	private String orderNumber;
 
 	public String getUserId() {
 		return userId;
@@ -69,6 +72,14 @@ public class OrderStatus {
 
 	public void setState(String state) {
 		this.state = state;
+	}
+
+	public String getOrderNumber() {
+		return orderNumber;
+	}
+
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
 	}
 
 	public OrderStatus() {

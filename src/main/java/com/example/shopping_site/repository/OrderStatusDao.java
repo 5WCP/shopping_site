@@ -16,4 +16,6 @@ public interface OrderStatusDao extends JpaRepository<OrderStatus, UserBuyProduc
 	List<OrderStatus> findByUserIdAndState(String userid, String state);
 	
 	List<OrderStatus> findByProductId(String productId);
+	
+	List<OrderStatus> findByUserId(String userId);
 }

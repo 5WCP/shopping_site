@@ -12,6 +12,7 @@ import com.example.shopping_site.entity.ProductInfo;
 import com.example.shopping_site.entity.ProductSort;
 import com.example.shopping_site.repository.MemberInfoDao;
 import com.example.shopping_site.repository.ProductInfoDao;
+import com.example.shopping_site.repository.ProductSortDao;
 import com.example.shopping_site.request.ProductInfoRequest;
 import com.example.shopping_site.response.ProductInfoResponse;
 import com.example.shopping_site.response.RespProInfo;
@@ -25,6 +26,9 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	
 	@Autowired
 	private MemberInfoDao memberInfoDao;
+	
+	@Autowired
+	private ProductSortDao productSortDao;
 
 	@Override
 	public ProductInfoResponse addProduct(ProductInfoRequest request) {
@@ -64,7 +68,12 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		}
 		List<ProductSort> productSorts = new ArrayList<>();
 		for(String sort : request.getSortsName()) {
-			productSorts.add(new ProductSort(sort));
+			ProductSort sortN = productSortDao.findBySortName(sort);
+			if(sortN != null) {
+				productSorts.add(sortN);
+			} else {
+				productSorts.add(new ProductSort(sort));
+			}
 		}
 		reqPro.setUserId(reqPro.getUserId());
 		reqPro.setSorts(productSorts);
@@ -125,7 +134,12 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		}
 		List<ProductSort> productSorts = new ArrayList<>();
 		for(String sort : request.getSortsName()) {
-			productSorts.add(new ProductSort(sort));
+			ProductSort sortN = productSortDao.findBySortName(sort);
+			if(sortN != null) {
+				productSorts.add(sortN);
+			} else {
+				productSorts.add(new ProductSort(sort));
+			}
 		}
 		reqPro.setSorts(productSorts);
 		reqPro.setState(false);

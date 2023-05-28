@@ -21,6 +21,8 @@ public class RespProInfo {
 	private String state;
 	
 	private LocalDateTime updateTime;
+	
+	private String phone;
 
 	public String getUserId() {
 		return userId;
@@ -94,6 +96,14 @@ public class RespProInfo {
 		this.state = state;
 	}
 
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
 	public RespProInfo() {
 		
 	}
@@ -118,17 +128,18 @@ public class RespProInfo {
 	}
 
 	public RespProInfo(String productId, String productName, Integer price, Integer amount, String state,
-			LocalDateTime updateTime) {
+			LocalDateTime updateTime, String phone) {
 		this.productId = productId;
 		this.productName = productName;
 		this.price = price;
 		this.amount = amount;
 		this.state = state;
 		this.updateTime = updateTime;
+		this.phone = phone;
 	}
 
-	public RespProInfo(String userId, String productId, String productName, Integer price, Integer amount, String state,
-			LocalDateTime updateTime) {
+	public RespProInfo(String userId, String productId, String productName, Integer price, 
+			Integer amount, String state, LocalDateTime updateTime, String phone) {
 		this.userId = userId;
 		this.productId = productId;
 		this.productName = productName;
@@ -136,6 +147,7 @@ public class RespProInfo {
 		this.amount = amount;
 		this.state = state;
 		this.updateTime = updateTime;
+		this.phone = phone;
 	}
 	
 	
