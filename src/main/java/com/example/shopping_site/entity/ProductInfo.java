@@ -49,8 +49,8 @@ public class ProductInfo {
 	@Column(name = "add_time")
 	private LocalDateTime addTime;
 	
-	@Column(name = "delete")
-	private boolean delete;
+	@Column(name = "delete_pro")
+	private boolean deletePro;
 
 	public String getProductName() {
 		return productName;
@@ -124,12 +124,12 @@ public class ProductInfo {
 		this.addTime = addTime;
 	}
 
-	public boolean isDelete() {
-		return delete;
+	public boolean isDeletePro() {
+		return deletePro;
 	}
 
-	public void setDelete(boolean delete) {
-		this.delete = delete;
+	public void setDeletePro(boolean deletePro) {
+		this.deletePro = deletePro;
 	}
 
 	public ProductInfo() {

@@ -23,6 +23,26 @@ public class RespProInfo {
 	private LocalDateTime updateTime;
 	
 	private String phone;
+	
+	private String address;
+	
+	private String orderNumber;
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getOrderNumber() {
+		return orderNumber;
+	}
+
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
+	}
 
 	public String getUserId() {
 		return userId;
@@ -109,26 +129,29 @@ public class RespProInfo {
 	}
 
 	public RespProInfo(String productId, String productName, Integer price, Integer stock, 
-			String productPicture) {
+			String productPicture, String userId) { // 搜尋商品
 		this.productId = productId;
 		this.productName = productName;
 		this.price = price;
 		this.stock = stock;
 		this.productPicture = productPicture;
+		this.userId = userId;
 	}
 
 	public RespProInfo(String productId, String productName, Integer price, String productPicture, 
-			Integer amount, LocalDateTime updateTime) {
+			Integer amount, LocalDateTime updateTime, Integer stock) { // 購物車商品
 		this.productId = productId;
 		this.productName = productName;
 		this.price = price;
 		this.productPicture = productPicture;
 		this.amount = amount;
 		this.updateTime = updateTime;
+		this.stock = stock;
 	}
 
 	public RespProInfo(String productId, String productName, Integer price, Integer amount, String state,
-			LocalDateTime updateTime, String phone) {
+			LocalDateTime updateTime, String phone, String address, String orderNumber) { 
+		// 買家商品資料(包含地址與訂單號碼)
 		this.productId = productId;
 		this.productName = productName;
 		this.price = price;
@@ -136,10 +159,13 @@ public class RespProInfo {
 		this.state = state;
 		this.updateTime = updateTime;
 		this.phone = phone;
+		this.address = address;
+		this.orderNumber = orderNumber;
 	}
 
 	public RespProInfo(String userId, String productId, String productName, Integer price, 
-			Integer amount, String state, LocalDateTime updateTime, String phone) {
+			Integer amount, String state, LocalDateTime updateTime, String phone, String address, 
+			String orderNumber) { // 賣家商品資料(包含地址與訂單號碼)
 		this.userId = userId;
 		this.productId = productId;
 		this.productName = productName;
@@ -148,7 +174,24 @@ public class RespProInfo {
 		this.state = state;
 		this.updateTime = updateTime;
 		this.phone = phone;
+		this.address = address;
+		this.orderNumber = orderNumber;
 	}
 	
-	
+	public RespProInfo(String productId, String productName, Integer price, Integer amount) { 
+		// 買家商品資料
+		this.productId = productId;
+		this.productName = productName;
+		this.price = price;
+		this.amount = amount;
+	}
+
+	public RespProInfo(String userId, String productId, String productName, Integer price, 
+			Integer amount) { // 賣家商品資料
+		this.userId = userId;
+		this.productId = productId;
+		this.productName = productName;
+		this.price = price;
+		this.amount = amount;
+	}
 }

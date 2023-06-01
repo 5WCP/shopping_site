@@ -1,10 +1,14 @@
 package com.example.shopping_site.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -35,6 +39,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		ProductInfo reqPro = request.getProductInfo();
 		String english = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		int number = 100000000;
+		LocalDateTime addTime = LocalDateTime.now();
 		Random random = new Random();
 		char randomEng = english.charAt(random.nextInt(english.length()));
 		int randomNum = random.nextInt(number);
@@ -75,8 +80,10 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 				productSorts.add(new ProductSort(sort));
 			}
 		}
-		reqPro.setUserId(reqPro.getUserId());
 		reqPro.setSorts(productSorts);
+		reqPro.setAddTime(addTime);
+		reqPro.setDeletePro(false);
+		reqPro.setState(false);
 		productInfoDao.save(reqPro);
 		return new ProductInfoResponse("商品新增成功");
 	}
@@ -101,6 +108,30 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 			return new ProductInfoResponse("請先下架後再刪除");
 		}
 		productInfoDao.delete(delePro);
+		return new ProductInfoResponse("商品刪除成功");
+	}
+	
+	@Override
+	public ProductInfoResponse deleProduct(ProductInfoRequest request) {
+		ProductInfo reqPro = request.getProductInfo();
+		if(!StringUtils.hasText(reqPro.getProductId())) {
+			return new ProductInfoResponse("商品代碼未填寫");
+		}
+		if(!productInfoDao.existsById(reqPro.getProductId())) {
+			return new ProductInfoResponse("商品不存在");
+		}
+		if(!StringUtils.hasText(reqPro.getProductName())) {
+			return new ProductInfoResponse("商品名稱未填寫");
+		}
+		ProductInfo delePro = productInfoDao.findById(reqPro.getProductId()).get();
+		if(!reqPro.getUserId().equals(delePro.getUserId())) {
+			return new ProductInfoResponse("您非此商品的擁有者");
+		}
+		if(delePro.isState() == true) {
+			return new ProductInfoResponse("請先下架後再刪除");
+		}
+		delePro.setDeletePro(true);
+		productInfoDao.save(delePro);
 		return new ProductInfoResponse("商品刪除成功");
 	}
 
@@ -143,6 +174,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		}
 		reqPro.setSorts(productSorts);
 		reqPro.setState(false);
+		reqPro.setDeletePro(false);
 		productInfoDao.delete(oriPro);
 		productInfoDao.save(reqPro);
 		return new ProductInfoResponse("商品修改成功");
@@ -182,11 +214,28 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 			return new ProductInfoResponse("登入的用戶名非本站的用戶名(異常)");
 		}
 		List<ProductInfo> sellList = productInfoDao.findByUserId(request.getUserId());
-		List<String> sellIdList = new ArrayList<>();
+		Set<String> sellNameSet = new HashSet<>();
 		for(ProductInfo sellPro : sellList) {
-			sellIdList.add(sellPro.getProductId());
+			if(sellPro.isDeletePro() == false) {
+				sellNameSet.add(sellPro.getProductName());
+			}
 		}
-		return new ProductInfoResponse(sellIdList);
+		return new ProductInfoResponse(sellNameSet);
+	}
+	
+	@Override
+	public ProductInfoResponse nameToId(ProductInfoRequest request) {
+		String reqN = request.getProductInfo().getProductName();
+		if(!StringUtils.hasText(reqN)) {
+			return new ProductInfoResponse();
+		}
+		List<ProductInfo> nameProList = new ArrayList<>(); // 找出該名稱的商品
+		nameProList = productInfoDao.findByProductName(reqN);
+		List<String> proIdList = new ArrayList<>();
+		for(ProductInfo namePro : nameProList) { // 找出該名稱的商品代碼陣列
+			proIdList.add(namePro.getProductId());
+		}
+		return new ProductInfoResponse(proIdList);
 	}
 
 	@Override
@@ -205,16 +254,18 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		List<ProductInfo> allProList = new ArrayList<>(); // 所有商品
 		List<ProductInfo> sortProList = new ArrayList<>(); // 分類商品
 		List<RespProInfo> repsProList = new ArrayList<>(); // 回傳的商品資訊
-		allProList = productInfoDao.findAll();
-		sortProList = productInfoDao.findBySortsSortName(request.getSortName());
+		Sort sort = Sort.by(Sort.Direction.DESC, "addTime");
+		allProList = productInfoDao.findAll(sort);
+		sortProList = productInfoDao.findBySortsSortName(request.getSortName(), sort);
 		if(request.getSortName().equals("全部搜尋")) {
 			if(allProList.isEmpty()) {
 				return new ProductInfoResponse("網站暫無商品");
 			}
 			for(ProductInfo pro : allProList) {
-				if(pro.isState() == true && !pro.getUserId().equals(request.getUserId())) {
+//				if(pro.isState() == true && !pro.getUserId().equals(request.getUserId())) {
+				if(pro.isState() == true && pro.isDeletePro() == false) {
 					repsProList.add(new RespProInfo(pro.getProductId(), pro.getProductName(), pro.getPrice(), 
-							pro.getStock(), pro.getProductPicture()));
+							pro.getStock(), pro.getProductPicture(), pro.getUserId()));
 				}
 			}
 			return new ProductInfoResponse("查詢成功", repsProList);
@@ -223,9 +274,9 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 			return new ProductInfoResponse("該分類暫無商品");
 		}
 		for(ProductInfo sortPro : sortProList) {
-			if(sortPro.isState() == true && !sortPro.getUserId().equals(request.getUserId())) {
+			if(sortPro.isState() == true && sortPro.isDeletePro() == false) {
 				repsProList.add(new RespProInfo(sortPro.getProductId(), sortPro.getProductName(), sortPro.getPrice(), 
-						sortPro.getStock(), sortPro.getProductPicture()));
+						sortPro.getStock(), sortPro.getProductPicture(), sortPro.getUserId()));
 			}
 		}
 		return new ProductInfoResponse("查詢成功", repsProList);
@@ -235,14 +286,15 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	public ProductInfoResponse searAllPro(ProductInfoRequest request) {
 		List<ProductInfo> allProList = new ArrayList<>(); // 所有商品
 		List<RespProInfo> repsProList = new ArrayList<>(); // 回傳的商品資訊
-		allProList = productInfoDao.findAll();
+		Sort sort = Sort.by(Sort.Direction.DESC, "addTime");
+		allProList = productInfoDao.findAll(sort);
 		if(allProList.isEmpty()) {
 			return new ProductInfoResponse("網站暫無商品");
 		}
 		for(ProductInfo pro : allProList) {
-			if(pro.isState() == true && !pro.getUserId().equals(request.getUserId())) {
+			if(pro.isState() == true && pro.isDeletePro() == false) {
 				repsProList.add(new RespProInfo(pro.getProductId(), pro.getProductName(), pro.getPrice(), 
-						pro.getStock(), pro.getProductPicture()));
+						pro.getStock(), pro.getProductPicture(), pro.getUserId()));
 			}
 		}
 		return new ProductInfoResponse("查詢成功", repsProList);
@@ -256,18 +308,20 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		List<ProductInfo> allProNameList = new ArrayList<>(); // 所有搜尋名稱商品
 		List<ProductInfo> sortProNameList = new ArrayList<>(); // 分類搜尋名稱商品
 		List<RespProInfo> repsProList = new ArrayList<>(); // 回傳的商品資訊
+		Sort sort = Sort.by(Sort.Direction.DESC, "addTime");
 		allProNameList = productInfoDao.findByProductNameContaining
-				(request.getProductInfo().getProductName());
+				(request.getProductInfo().getProductName(), sort);
 		sortProNameList = productInfoDao.findByProductNameContainingAndSortsSortName
-				(request.getProductInfo().getProductName(), request.getSortName());
+				(request.getProductInfo().getProductName(), request.getSortName(), sort);
 		if(request.getSortName().equals("全部搜尋")) {
 			if(allProNameList.isEmpty()) {
 				return new ProductInfoResponse("網站暫無此名稱的商品");
 			}
 			for(ProductInfo pro : allProNameList) {
-				if(pro.isState() == true && !pro.getUserId().equals(request.getUserId())) {
+//				if(pro.isState() == true && !pro.getUserId().equals(request.getUserId())) {
+				if(pro.isState() == true && pro.isDeletePro() == false) {
 					repsProList.add(new RespProInfo(pro.getProductId(), pro.getProductName(), pro.getPrice(), 
-							pro.getStock(), pro.getProductPicture()));
+							pro.getStock(), pro.getProductPicture(), pro.getUserId()));
 				}
 			}
 			return new ProductInfoResponse("查詢成功", repsProList);
@@ -277,9 +331,9 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 			return new ProductInfoResponse("該分類暫無此名稱的商品");
 		}
 		for(ProductInfo sortPro : sortProNameList) {
-			if(sortPro.isState() == true && !sortPro.getUserId().equals(request.getUserId())) {
+			if(sortPro.isState() == true && sortPro.isDeletePro() == false) {
 				repsProList.add(new RespProInfo(sortPro.getProductId(), sortPro.getProductName(), sortPro.getPrice(), 
-						sortPro.getStock(), sortPro.getProductPicture()));
+						sortPro.getStock(), sortPro.getProductPicture(), sortPro.getUserId()));
 			}
 		}
 		return new ProductInfoResponse("查詢成功", repsProList);

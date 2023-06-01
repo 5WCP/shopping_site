@@ -16,4 +16,6 @@ public interface MemberInfoService {
 	public MemberInfoResponse findMemInfo(MemberInfoRequest request);
 	
 	public MemberInfoResponse deleMemInfo(MemberInfoRequest request);
+	
+	public MemberInfoResponse disableMemInfo(MemberInfoRequest request);
 }

@@ -27,6 +27,11 @@ public class ProductInfoController {
 		return productInfoService.deleteProduct(request);
 	}
 	
+	@PostMapping("dele_product")
+	public ProductInfoResponse deleProduct(@RequestBody ProductInfoRequest request) {
+		return productInfoService.deleProduct(request);
+	}
+	
 	@PostMapping("revise_product")
 	public ProductInfoResponse reviseProduct(@RequestBody ProductInfoRequest request) {
 		return productInfoService.reviseProduct(request);
@@ -40,6 +45,11 @@ public class ProductInfoController {
 	@PostMapping("find_mem_sell")
 	public ProductInfoResponse findMemSell(@RequestBody ProductInfoRequest request) {
 		return productInfoService.findMemSell(request);
+	}
+	
+	@PostMapping("name_to_id")
+	public ProductInfoResponse nameToId(@RequestBody ProductInfoRequest request) {
+		return productInfoService.nameToId(request);
 	}
 	
 	@PostMapping("get_pro_info")

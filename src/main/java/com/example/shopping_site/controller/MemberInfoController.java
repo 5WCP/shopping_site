@@ -46,4 +46,9 @@ public class MemberInfoController {
 	public MemberInfoResponse deleMemInfo(@RequestBody MemberInfoRequest request) {
 		return memberInfoService.deleMemInfo(request);
 	}
+	
+	@PostMapping("disable_mem_info")
+	public MemberInfoResponse disableMemInfo(@RequestBody MemberInfoRequest request) {
+		return memberInfoService.disableMemInfo(request);
+	}
 }

@@ -22,4 +22,6 @@ public interface OrderStatusService {
 	public OrderStatusResponse sellCancelOrd(OrderStatusRequest request);
 	
 	public OrderStatusResponse changeOrdState(OrderStatusRequest request);
+	
+	public OrderStatusResponse changeCartAmount(OrderStatusRequest request);
 }

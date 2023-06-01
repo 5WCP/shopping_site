@@ -74,6 +74,7 @@ public class MemberInfoServiceImpl implements MemberInfoService {
 		if(!reqMem.getPhone().matches(phoneFormat)) {
 			return new MemberInfoResponse("手機格式錯誤");
 		}
+		reqMem.setActive(true);
 		LocalDateTime signUpTime = LocalDateTime.now();
 		reqMem.setSignUpTime(signUpTime);
 		memberInfoDao.save(reqMem);
@@ -88,11 +89,14 @@ public class MemberInfoServiceImpl implements MemberInfoService {
 			return new MemberInfoResponse("需填寫欄位請確實填寫");
 		}
 		if(!memberInfoDao.existsById(reqMem.getUserId())) {
-			return new MemberInfoResponse("用戶名不存在");
+			return new MemberInfoResponse("用戶名不存在或密碼錯誤");
 		}
 		MemberInfo mem = memberInfoDao.findById(reqMem.getUserId()).get();
 		if(!reqMem.getPassword().equals(mem.getPassword())) {
-			return new MemberInfoResponse("密碼錯誤");
+			return new MemberInfoResponse("用戶名不存在或密碼錯誤");
+		}
+		if(mem.isActive() == false) {
+			return new MemberInfoResponse("該用戶品處於停用狀態");
 		}
 		return new MemberInfoResponse("用戶名(" + reqMem.getUserId() + ")登入成功");
 	}
@@ -228,5 +232,38 @@ public class MemberInfoServiceImpl implements MemberInfoService {
 		MemberInfo deleMem = memberInfoDao.findById(reqMem.getUserId()).get();
 		memberInfoDao.delete(deleMem);
 		return new MemberInfoResponse("會員刪除成功");
+	}
+
+	@Override
+	public MemberInfoResponse disableMemInfo(MemberInfoRequest request) {
+		MemberInfo reqMem = request.getMemberInfo();
+		if(!StringUtils.hasText(reqMem.getUserId())) {
+			return new MemberInfoResponse("尚未登入(異常)");
+		}
+		if(!memberInfoDao.existsById(reqMem.getUserId())) {
+			return new MemberInfoResponse("該用戶品非本站用戶(異常)");
+		}
+		List<ProductInfo> sellProList = new ArrayList<>(); // 找出會員的販賣商品
+		sellProList = productInfoDao.findByUserId(reqMem.getUserId());
+		if(!sellProList.isEmpty()) {
+			return new MemberInfoResponse("尚有販賣商品 請先刪除");
+		}
+		List<OrderStatus> memOrdList = new ArrayList<>(); // 找出會員的下單資料
+		memOrdList = orderStatusDao.findByUserId(reqMem.getUserId());
+		if(!memOrdList.isEmpty()) {
+			for(OrderStatus memOrd : memOrdList) {
+				if(memOrd.getState().equals("考慮中")) {
+					return new MemberInfoResponse("請先刪除購物車的商品");
+				}
+				if(memOrd.getState().equals("準備中") || memOrd.getState().equals("運送中")
+						|| memOrd.getState().equals("待收貨")) {
+					return new MemberInfoResponse("尚有已下單的商品 無法停用");
+				}
+			}
+		}
+		MemberInfo disableMem = memberInfoDao.findById(reqMem.getUserId()).get();
+		disableMem.setActive(false);
+		memberInfoDao.save(disableMem);
+		return new MemberInfoResponse("會員已停用");
 	}
 }

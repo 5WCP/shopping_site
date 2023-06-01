@@ -13,6 +13,9 @@ public class OrderStatusRequest {
 	
 	@JsonProperty("state")
 	private String state;
+	
+	@JsonProperty("address")
+	private String address;
 
 	public OrderStatus getOrderStatus() {
 		return orderStatus;
@@ -36,6 +39,14 @@ public class OrderStatusRequest {
 
 	public void setState(String state) {
 		this.state = state;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 	
 }

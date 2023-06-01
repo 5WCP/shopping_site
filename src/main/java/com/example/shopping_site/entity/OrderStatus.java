@@ -33,6 +33,9 @@ public class OrderStatus {
 	
 	@Column(name = "order_number")
 	private String orderNumber;
+	
+	@Column(name = "address")
+	private String address;
 
 	public String getUserId() {
 		return userId;
@@ -82,6 +85,14 @@ public class OrderStatus {
 		this.orderNumber = orderNumber;
 	}
 
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
 	public OrderStatus() {
 		
 	}
@@ -95,5 +106,15 @@ public class OrderStatus {
 		this.state = state;
 	}
 
+	public OrderStatus(String userId, String productId, LocalDateTime updateTime, Integer amount, 
+			String state, String orderNumber, String address) {
+		this.userId = userId;
+		this.productId = productId;
+		this.updateTime = updateTime;
+		this.amount = amount;
+		this.state = state;
+		this.orderNumber = orderNumber;
+		this.address = address;
+	}
 		
 }

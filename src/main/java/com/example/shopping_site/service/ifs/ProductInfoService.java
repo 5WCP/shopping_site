@@ -7,13 +7,17 @@ public interface ProductInfoService {
 	
 	public ProductInfoResponse addProduct(ProductInfoRequest request);
 	
-	public ProductInfoResponse deleteProduct(ProductInfoRequest request);
+	public ProductInfoResponse deleteProduct(ProductInfoRequest request); // 從資料庫刪除(暫不使用)
+	
+	public ProductInfoResponse deleProduct(ProductInfoRequest request); // 沒有從資料庫刪除
 	
 	public ProductInfoResponse reviseProduct(ProductInfoRequest request);
 	
 	public ProductInfoResponse changeState(ProductInfoRequest request);
 	
-	public ProductInfoResponse findMemSell(ProductInfoRequest request);
+	public ProductInfoResponse findMemSell(ProductInfoRequest request); // 找出賣家販賣的商品名稱
+	
+	public ProductInfoResponse nameToId(ProductInfoRequest request); // 商品名稱帶出商品代碼
 	
 	public ProductInfoResponse getProInfo(ProductInfoRequest request);
 	

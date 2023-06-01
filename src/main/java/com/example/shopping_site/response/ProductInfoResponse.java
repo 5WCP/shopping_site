@@ -1,6 +1,7 @@
 package com.example.shopping_site.response;
 
 import java.util.List;
+import java.util.Set;
 
 import com.example.shopping_site.entity.ProductInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -35,6 +36,9 @@ public class ProductInfoResponse {
 	
 	@JsonProperty("re_pro_list")
 	private List<RespProInfo> respProInfoList;
+	
+	@JsonProperty("pro_name_set")
+	private Set<String> proNameSet;
 
 	public String getMessage() {
 		return message;
@@ -108,6 +112,22 @@ public class ProductInfoResponse {
 		this.state = state;
 	}
 
+	public List<RespProInfo> getRespProInfoList() {
+		return respProInfoList;
+	}
+
+	public void setRespProInfoList(List<RespProInfo> respProInfoList) {
+		this.respProInfoList = respProInfoList;
+	}
+
+	public Set<String> getProNameSet() {
+		return proNameSet;
+	}
+
+	public void setProNameSet(Set<String> proNameSet) {
+		this.proNameSet = proNameSet;
+	}
+
 	public ProductInfoResponse() {
 		
 	}
@@ -132,6 +152,10 @@ public class ProductInfoResponse {
 	public ProductInfoResponse(String message, List<RespProInfo> respProInfoList) {
 		this.message = message;
 		this.respProInfoList = respProInfoList;
+	}
+
+	public ProductInfoResponse(Set<String> proNameSet) {
+		this.proNameSet = proNameSet;
 	}
 
 }

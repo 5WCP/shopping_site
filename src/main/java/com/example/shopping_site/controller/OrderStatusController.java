@@ -61,4 +61,9 @@ public class OrderStatusController {
 	public OrderStatusResponse changeOrdState(@RequestBody OrderStatusRequest request) {
 		return orderStatusService.changeOrdState(request);
 	}
+	
+	@PostMapping("change_cart_amount")
+	public OrderStatusResponse changeCartAmount(@RequestBody OrderStatusRequest request) {
+		return orderStatusService.changeCartAmount(request);
+	}
 }
