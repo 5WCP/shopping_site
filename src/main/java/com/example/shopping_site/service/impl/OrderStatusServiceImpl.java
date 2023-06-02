@@ -50,7 +50,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 		userCartList = orderStatusDao.findByUserIdAndProductIdAndState(reqOrd.getUserId(), reqOrd.getProductId() , "考慮中");
 		ProductInfo pro = productInfoDao.findById(reqOrd.getProductId()).get();
 		if(userCartList.isEmpty()) {
-			if(reqOrd.getAmount() == 0) {
+			if(reqOrd.getAmount() <= 0) {
 				return new OrderStatusResponse();
 			}
 			if(reqOrd.getAmount() > pro.getStock()) {
@@ -133,26 +133,26 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 			diffSell.add(pro.getUserId()); // 找出所有購物車的買家 存進set
 		}
 		for(String sellId : diffSell) {
+			String english = "abcdefghijklmnopqrstuvxyz"; // 生成新訂單編號
+			int number = 100000000;
+			Random random = new Random();
+			char randomEng = english.charAt(random.nextInt(english.length()));
+			int randomNum = random.nextInt(number);
+			StringBuilder bulidOrderN = new StringBuilder();
+			bulidOrderN.append(randomEng);
+			bulidOrderN.append(String.format("%08d", randomNum));
+			String newOrN = bulidOrderN.toString();
+			while(!orderStatusDao.findByOrderNumber(newOrN).isEmpty()) { // 訂單編號已存在
+				randomEng = english.charAt(random.nextInt(english.length()));
+				randomNum = random.nextInt(number);
+				StringBuilder bulidOrderNR = new StringBuilder();
+				bulidOrderNR.append(randomEng);
+				bulidOrderNR.append(String.format("%08d", randomNum));
+				newOrN = bulidOrderNR.toString();
+			}
 			for(OrderStatus cartPro : cartProList) {
 				ProductInfo pro = productInfoDao.findById(cartPro.getProductId()).get();
 				if(pro.getUserId().equals(sellId)) {
-					String english = "abcdefghijklmnopqrstuvxyz"; // 生成新訂單編號
-					int number = 100000000;
-					Random random = new Random();
-					char randomEng = english.charAt(random.nextInt(english.length()));
-					int randomNum = random.nextInt(number);
-					StringBuilder bulidOrderN = new StringBuilder();
-					bulidOrderN.append(randomEng);
-					bulidOrderN.append(String.format("%08d", randomNum));
-					String newOrN = bulidOrderN.toString();
-					while(!orderStatusDao.findByOrderNumber(newOrN).isEmpty()) { // 訂單編號已存在
-						randomEng = english.charAt(random.nextInt(english.length()));
-						randomNum = random.nextInt(number);
-						StringBuilder bulidOrderNR = new StringBuilder();
-						bulidOrderNR.append(randomEng);
-						bulidOrderNR.append(String.format("%08d", randomNum));
-						newOrN = bulidOrderNR.toString();
-					}
 					if((pro.getStock() - cartPro.getAmount()) < 0) {
 						return new OrderStatusResponse("(" + pro.getProductId() + ")商品庫存不足");
 					}
@@ -219,6 +219,9 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 			OrderStatus oriOrd = orderStatusDao.findById(new UserBuyProduct(cancelOrdNP.getUserId(), 
 					cancelOrdNP.getProductId(), cancelOrdNP.getUpdateTime())).get(); // 拉出原本資料庫的訂單資料
 			ProductInfo cancelPro = productInfoDao.findById(cancelOrdNP.getProductId()).get(); // 找出被取消訂單的商品
+			if(cancelPro.getStock() == 0) {
+				cancelPro.setState(true);
+			}
 			cancelPro.setStock(cancelPro.getStock() + oriOrd.getAmount()); // 把取消的數量新增回庫存
 			productInfoDao.save(cancelPro);
 			OrderStatus cancelOrd = new OrderStatus(oriOrd.getUserId(),oriOrd.getProductId(), 
@@ -242,8 +245,9 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 		userSellProList = productInfoDao.findByUserId(reqUser);
 		List<OrderStatus> orderSellProList = new ArrayList<>(); // 找出在下單資料庫的商品
 		for(ProductInfo userSellPro : userSellProList) {
-			List<OrderStatus> orderProList = new ArrayList<>(); // 找出賣家單件商品在下單資料庫的資料
-			orderProList = orderStatusDao.findByProductId(userSellPro.getProductId());
+			List<OrderStatus> orderProList = new ArrayList<>(); 
+			// 找出賣家單件商品在下單資料庫且符合要搜尋狀態的資料
+			orderProList = orderStatusDao.findByProductIdAndState(userSellPro.getProductId(), request.getState());
 			if(!orderProList.isEmpty()) { // 如果單件商品在下單資料庫找得到
 				orderSellProList.addAll(orderProList);
 			}
@@ -258,11 +262,9 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 			List<OrderStatus> proInOrdNL = new ArrayList<>();
 			proInOrdNL = orderStatusDao.findByOrderNumber(ordN); // 找出這張訂單號碼的商品
 			for(OrderStatus proInOrdN : proInOrdNL) {
-				if(proInOrdN.getState().equals(request.getState())) {
-					ProductInfo pro = productInfoDao.findById(proInOrdN.getProductId()).get();
-					sellStaProList.add(new RespProInfo(proInOrdN.getUserId(), proInOrdN.getProductId(), 
-							pro.getProductName(), pro.getPrice(), proInOrdN.getAmount()));
-				}
+				ProductInfo pro = productInfoDao.findById(proInOrdN.getProductId()).get();
+				sellStaProList.add(new RespProInfo(proInOrdN.getUserId(), proInOrdN.getProductId(), 
+						pro.getProductName(), pro.getPrice(), proInOrdN.getAmount()));
 			}
 			OrderStatus ordNIn = proInOrdNL.get(0); // 資訊一樣的部分只需要抽出陣列其中一筆取得資料
 			MemberInfo buyMem = memberInfoDao.findById(ordNIn.getUserId()).get();
@@ -307,9 +309,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 						updateTime, oriOrd.getAmount(), "運送中", oriOrd.getOrderNumber(), oriOrd.getAddress()); // 要轉換狀態的訂單資料
 				orderStatusDao.delete(oriOrd);
 				orderStatusDao.save(chaStaOrd);
-				return new OrderStatusResponse("訂單狀態變更成功");
-			}
-			if(reqChaStaOrd.getState().equals("運送中")) {
+			} else if(reqChaStaOrd.getState().equals("運送中")) {
 				OrderStatus oriOrd = orderStatusDao.findById(new UserBuyProduct(
 						reqChaStaOrd.getUserId(), reqChaStaOrd.getProductId(), 
 						reqChaStaOrd.getUpdateTime())).get(); // 拉出原本資料庫的訂單資料
@@ -317,18 +317,17 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 						updateTime, oriOrd.getAmount(), "待收貨", oriOrd.getOrderNumber(), oriOrd.getAddress()); // 要轉換狀態的訂單資料
 				orderStatusDao.delete(oriOrd);
 				orderStatusDao.save(chaStaOrd);
-				return new OrderStatusResponse("訂單狀態變更成功");
+			} else {	
+				OrderStatus oriOrd = orderStatusDao.findById(new UserBuyProduct(
+						reqChaStaOrd.getUserId(), reqChaStaOrd.getProductId(), 
+						reqChaStaOrd.getUpdateTime())).get(); // 拉出原本資料庫的訂單資料
+				OrderStatus chaStaOrd = new OrderStatus(oriOrd.getUserId(),oriOrd.getProductId(), 
+						updateTime, oriOrd.getAmount(), "已完成", oriOrd.getOrderNumber(), oriOrd.getAddress()); // 要轉換狀態的訂單資料
+				orderStatusDao.delete(oriOrd);
+				orderStatusDao.save(chaStaOrd);
 			}
-			OrderStatus oriOrd = orderStatusDao.findById(new UserBuyProduct(
-					reqChaStaOrd.getUserId(), reqChaStaOrd.getProductId(), 
-					reqChaStaOrd.getUpdateTime())).get(); // 拉出原本資料庫的訂單資料
-			OrderStatus chaStaOrd = new OrderStatus(oriOrd.getUserId(),oriOrd.getProductId(), 
-					updateTime, oriOrd.getAmount(), "已完成", oriOrd.getOrderNumber(), oriOrd.getAddress()); // 要轉換狀態的訂單資料
-			orderStatusDao.delete(oriOrd);
-			orderStatusDao.save(chaStaOrd);
-			return new OrderStatusResponse("訂單狀態變更成功");
 		}
-		return new OrderStatusResponse();
+		return new OrderStatusResponse("訂單狀態變更成功");
 	}
 
 	@Override
